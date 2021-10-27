@@ -2,11 +2,8 @@ const {Client, Intents, Collection} = require('discord.js');
 const Discord = require('discord.js');
 const fs = require('fs');
 const mongoose = require('mongoose');
-const cron = require('node-cron');
 require('log-timestamp');
-const serverModel = require('./lib/serverModel');
-const autobackupModel = require('./lib/autobackupModel');
-const autobackup = require("./workers/backup-worker")
+const premiumModel = require('./lib/premiumModel')
 
 const myIntents = new Intents();
 myIntents.add();
@@ -22,7 +19,7 @@ const client = new Client({
      presence: {
 		status: 'online',
 		activity: {
-			name: 'printers',
+			name: 'subscriptions',
 			type: 'WATCHING'
 		}
 	}
@@ -38,7 +35,7 @@ const nl = "\n"
 
 client.once('ready' , () => {
     console.log(`${client.user.tag} is online !`);
-    client.user.setActivity('Server Backups', { type: 'WATCHING' });
+    client.user.setActivity('Subscriptions', { type: 'WATCHING' });
 })
 
 console.log("------------- LOADING SHASH COMMANDS ------------------------");
@@ -62,27 +59,10 @@ client.on('interactionCreate', async (interaction) => {
 
         //if (!command) return;
 
-        await interaction.deferReply();
-
-        getserver0 = await serverModel.find({ "server_id": interaction.guildId }).catch((error) => {
-            console.error(error);
-            interaction.editReply('เกิดข้อผิดพลาด กรุณาติดต่อผู้พัฒนาที่ [Support Discord](https://discord.gg/M8GrEeZAcz)');
-        });;
-        const getserver = getserver0[0]
-
-        if (!getserver) {
-            let createserver = await serverModel.create({
-                "server_id": interaction.guildId,
-                "server_prefix": "!tm",
-                "server_type": "normal",
-                "backup_interval": "off",
-                "trusted_admin": []
-            })
-            createserver.save();
-        }
+        await interaction.deferReply({ephemeral: true});
 
         try{
-            client.slashCommands.get(interaction.commandName).execute(config ,client, interaction, getserver);
+            client.slashCommands.get(interaction.commandName).execute(config ,client, interaction);
         } catch (error) {
             console.error(error);
             interaction.editReply('เกิดข้อผิดพลาด กรุณาติดต่อผู้พัฒนาที่ [Support Discord](https://discord.gg/M8GrEeZAcz)')
@@ -90,19 +70,14 @@ client.on('interactionCreate', async (interaction) => {
     }
 })
 
-// load job
-
-const checkForAutoBackup = async (interval) => {
-    hrbackup = await autobackupModel.find({ "backup_interval": interval }).catch((error) => {
-        console.error(error);
-    });
-    for (const backup of hrbackup) {
-        autobackup.runBackup(client, backup)
-    }
-}
-
 cron.schedule('* * * * *', async function() {
-    checkForAutoBackup("1h");
+    getpremium = await premiumModel.find({"user_id": interaction.guildId });
+    
+    for (const premium of getpremium) {
+        if(premium.expire < Date.now()) {
+            await premiumModel.findOneAndDelete({})
+        }
+    }
 });
 
 loadmongo();
