@@ -3,7 +3,8 @@ const Discord = require('discord.js');
 const fs = require('fs');
 const mongoose = require('mongoose');
 require('log-timestamp');
-const premiumModel = require('./lib/premiumModel')
+const premiumModel = require('./lib/premiumModel');
+const cron = require('node-cron');
 
 const myIntents = new Intents();
 myIntents.add();
@@ -71,11 +72,11 @@ client.on('interactionCreate', async (interaction) => {
 })
 
 cron.schedule('* * * * *', async function() {
-    getpremium = await premiumModel.find({"user_id": interaction.guildId });
+    getpremium = await premiumModel.find({});
     
     for (const premium of getpremium) {
         if(premium.expire < Date.now()) {
-            await premiumModel.findOneAndDelete({})
+            await premiumModel.findOneAndDelete({"user_id": premium.user_id })
         }
     }
 });

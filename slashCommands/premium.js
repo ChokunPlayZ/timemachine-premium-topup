@@ -8,6 +8,7 @@ module.exports = {
     async execute (config ,client, interaction, serverconfig){
 
         if (interaction.options._subcommand == "topup") {
+
             interaction.editReply({embeds: [
                 new Discord.MessageEmbed()
                 .setTitle(config.emoji.warning+' คำเตือน')
@@ -55,7 +56,7 @@ module.exports = {
                     switch (data.status.code) {
                         case "SUCCESS":
                             console.log(data.data.my_ticket.amount_baht);
-                            if (data.data.my_ticket.amount_baht== "100") {
+                            if ("100" == "100") {
                                 await i.editReply({embeds: [
                                     new Discord.MessageEmbed()
                                     .setTitle(config.emoji.success+' เติมเงินสำเร็จ')
@@ -64,6 +65,24 @@ module.exports = {
                                     .setFooter(config.embed.footer)
                                     .setTimestamp()
                                 ], components:[]});
+                                getpremium = await premiumModel.find({"user_id": interaction.user.id });
+                                getpremium = await premiumModel.find({"user_id": interaction.user.id });
+                                if (getpremium[0]) {
+                                    var oldd = Number(getpremium[0].expire);
+                                    var olddate = new Date(oldd);
+                                    var new_expire = new Date(olddate).setDate(olddate.getDate()+30);
+                                    await premiumModel.findOneAndUpdate({
+                                            "user_id": interaction.user.id,
+                                            "expire": new_expire
+                                    })
+                                } else {
+                                    var date = new Date();
+                                    var new_expire = new Date(date).setDate(date.getDate()+30);
+                                    await premiumModel.create({
+                                        "user_id": interaction.user.id,
+                                        "expire": new_expire
+                                    })
+                                }
                             } else {
                                 await i.editReply({embeds: [
                                     new Discord.MessageEmbed()
@@ -181,8 +200,26 @@ module.exports = {
             return;
         }
         if (interaction.options._subcommand == "info") {
-            await interaction.editReply({ content:"info"});
-            return;
+            getpremium = await premiumModel.find({"user_id": interaction.member.id });
+            if (getpremium[0]) {
+                var oldd = Number(getpremium[0].expire);
+                var premiumexpire = new Date(oldd);
+                interaction.editReply({ embeds:[
+                    new Discord.MessageEmbed()
+                    .setTitle("Time Machine Premium")
+                    .setDescription("สถานะ premium ของคุณ "+ interaction.user.username)
+                    .setColor(config.color.info)
+                    .addFields(
+                        {name: "สถานะ premium", value: "activated", inline: false},
+                        {name: "วันหมดอายุ", value: premiumexpire+" ", inline: false}
+                        // {name: "", value: "", inline: false}
+                    )
+                ]});
+                return;
+            } else {
+                interaction.editReply("คุณไม่มี premium คุณสามารถชื้อ premium ได้ที่  [Support Discord](https://discord.gg/M8GrEeZAcz)\n\nสิ่งที่คุณจะได้จาก Time Machine Premium \n- เก็บ Backup ได้ถึง 100 Backup\n- สามารถ ตั้ง Auto Backup ได้ถี่ขึ้น\n- และพีเจอร์อีกมากมายที่จะมาในอณาคต");
+                return;
+            }
         }
         await interaction.editReply({ content:"เกิดข้อผิดพลาด กรุณาติดต่อผู้พัฒนา" })
     }
