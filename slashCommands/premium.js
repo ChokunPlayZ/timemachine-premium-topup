@@ -66,7 +66,6 @@ module.exports = {
                                     .setTimestamp()
                                 ], components:[]});
                                 getpremium = await premiumModel.find({"user_id": interaction.user.id });
-                                getpremium = await premiumModel.find({"user_id": interaction.user.id });
                                 await interaction.editReply({embeds: [
                                     new Discord.MessageEmbed()
                                     .setTitle(config.emoji.success+' เติมเงินสำเร็จ')
@@ -75,7 +74,6 @@ module.exports = {
                                     .setFooter(config.embed.footer)
                                     .setTimestamp()
                                 ], components:[]});
-                                getpremium = await premiumModel.find({"user_id": interaction.user.id });
                                 getpremium = await premiumModel.find({"user_id": interaction.user.id });
                                 if (getpremium[0]) {
                                     var oldd = Number(getpremium[0].expire);
