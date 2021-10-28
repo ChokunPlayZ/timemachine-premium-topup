@@ -9,37 +9,6 @@ module.exports = {
 
         if (interaction.options._subcommand == "topup") {
 
-            // testing remove before release
-
-            await interaction.editReply({embeds: [
-                new Discord.MessageEmbed()
-                .setTitle(config.emoji.success+' เติมเงินสำเร็จ')
-                .setDescription('เติมเงินสำเร็จ \nระบบจะใช้เวลาอับเดตประมาณ 5 นาที\nใช้ /premium ในบอท Time Machine เพื่อดูสถานะ Premium ของคุณ')
-                .setColor(config.color.success)
-                .setFooter(config.embed.footer)
-                .setTimestamp()
-            ], components:[]});
-            getpremium = await premiumModel.find({"user_id": interaction.user.id });
-            getpremium = await premiumModel.find({"user_id": interaction.user.id });
-            if (getpremium[0]) {
-                var oldd = Number(getpremium[0].expire);
-                var olddate = new Date(oldd);
-                var new_expire = new Date(olddate).setDate(olddate.getDate()+30);
-                await premiumModel.findOneAndUpdate({
-                        "user_id": interaction.user.id,
-                        "expire": new_expire
-                })
-            } else {
-                var date = new Date();
-                var new_expire = new Date(date).setDate(date.getDate()+30);
-                await premiumModel.create({
-                    "user_id": interaction.user.id,
-                    "expire": new_expire
-                })
-            }
-
-            return;
-            //
             interaction.editReply({embeds: [
                 new Discord.MessageEmbed()
                 .setTitle(config.emoji.warning+' คำเตือน')
@@ -98,13 +67,25 @@ module.exports = {
                                 ], components:[]});
                                 getpremium = await premiumModel.find({"user_id": interaction.user.id });
                                 getpremium = await premiumModel.find({"user_id": interaction.user.id });
+                                await interaction.editReply({embeds: [
+                                    new Discord.MessageEmbed()
+                                    .setTitle(config.emoji.success+' เติมเงินสำเร็จ')
+                                    .setDescription('เติมเงินสำเร็จ \nระบบจะใช้เวลาอับเดตประมาณ 5 นาที\nใช้ /premium ในบอท Time Machine เพื่อดูสถานะ Premium ของคุณ')
+                                    .setColor(config.color.success)
+                                    .setFooter(config.embed.footer)
+                                    .setTimestamp()
+                                ], components:[]});
+                                getpremium = await premiumModel.find({"user_id": interaction.user.id });
+                                getpremium = await premiumModel.find({"user_id": interaction.user.id });
                                 if (getpremium[0]) {
                                     var oldd = Number(getpremium[0].expire);
                                     var olddate = new Date(oldd);
                                     var new_expire = new Date(olddate).setDate(olddate.getDate()+30);
                                     await premiumModel.findOneAndUpdate({
-                                            "user_id": interaction.user.id,
-                                            "expire": new_expire
+                                            "user_id": interaction.user.id
+                                    },{
+                                        "user_id": interaction.user.id,
+                                        "expire": new_expire
                                     })
                                 } else {
                                     var date = new Date();
