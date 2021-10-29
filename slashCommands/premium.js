@@ -55,8 +55,7 @@ module.exports = {
 
                     switch (data.status.code) {
                         case "SUCCESS":
-                            console.log(data.data.my_ticket.amount_baht);
-                            if ("100" == "100") {
+                            if (data.data.my_ticket.amount_baht == "100") {
                                 await i.editReply({embeds: [
                                     new Discord.MessageEmbed()
                                     .setTitle(config.emoji.success+' เติมเงินสำเร็จ')
