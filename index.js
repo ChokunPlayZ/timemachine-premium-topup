@@ -75,8 +75,17 @@ cron.schedule('* * * * *', async function() {
     getpremium = await premiumModel.find({});
     
     for (const premium of getpremium) {
+        const guild = client.guilds.cache.get("902999441831755816");
+        const member = guild.members.cache.get(premium.user_id);
         if(premium.expire < Date.now()) {
+            if (member.roles.cache.has("903194758246187090")) {
+                member.roles.remove("903194758246187090").catch(console.error);
+            }
+
             await premiumModel.findOneAndDelete({"user_id": premium.user_id })
+        }
+        if (!member.roles.cache.has("903194758246187090")) {
+            member.roles.add("903194758246187090").catch(console.error);
         }
     }
 });
