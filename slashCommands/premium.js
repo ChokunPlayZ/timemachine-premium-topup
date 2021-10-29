@@ -55,7 +55,8 @@ module.exports = {
 
                     switch (data.status.code) {
                         case "SUCCESS":
-                            if (data.data.my_ticket.amount_baht == "100") {
+                            if (data.data.my_ticket.amount_baht > 99) {
+                                interaction.member.roles.add("903194758246187090");
                                 await i.editReply({embeds: [
                                     new Discord.MessageEmbed()
                                     .setTitle(config.emoji.success+' เติมเงินสำเร็จ')
